@@ -7,7 +7,7 @@ public class ThreadStateCheck {
     public static void main(String[] args) throws InterruptedException {
         List<Thread> threads = new ArrayList<>();
 
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 10000; i++) {
             Thread t = new Thread(() -> {
                 long sum = 0;
                 for (long j = 0; j < 100_000_000L; j++) {
