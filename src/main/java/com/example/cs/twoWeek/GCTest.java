@@ -8,7 +8,7 @@ public class GCTest {
         List<Object> list = new ArrayList<>();
 
         for (int i = 0; i < 10_000_000; i++) {
-            list.add(new Object()); // 힙에 확실히 남음
+            list.add(new Object());
         }
 
         System.out.println("Done");
