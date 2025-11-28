@@ -1,9 +1,7 @@
 package com.example.cs.twoWeek.WebClient;
 
-
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 
 public class ConcurrentWebClientTest {
 
@@ -15,8 +13,8 @@ public class ConcurrentWebClientTest {
 
         long startAll = System.nanoTime();
 
-        // 100개의 비동기 요청 생성
-        Flux<Long> flux = Flux.range(0, CONCURRENCY)
+        // 비동기 요청 100개 생성 + 동시성 100 보장
+        var results = Flux.range(0, CONCURRENCY)
                 .flatMap(i -> {
                     long start = System.nanoTime();
                     return client.get()
@@ -24,10 +22,9 @@ public class ConcurrentWebClientTest {
                             .retrieve()
                             .bodyToMono(String.class)
                             .map(x -> System.nanoTime() - start);
-                });
-
-        // 결과 수집
-        Long[] results = flux.collectList().block().toArray(Long[]::new);
+                }, CONCURRENCY)
+                .collectList()   // List<Long>
+                .block();        // 동기 수집
 
         long endAll = System.nanoTime();
 
@@ -46,7 +43,6 @@ public class ConcurrentWebClientTest {
         System.out.println("개별 평균 응답: " + (total / CONCURRENCY) / 1_000_000.0 + " ms");
         System.out.println("개별 최소: " + min / 1_000_000.0 + " ms");
         System.out.println("개별 최대: " + max / 1_000_000.0 + " ms");
-
         System.out.println("전체 처리 시간: " + (endAll - startAll) / 1_000_000.0 + " ms");
     }
 }
